@@ -2,43 +2,47 @@ import streamlit as st
 import pandas as pd
 
 st.set_page_config(page_title="Calculadora de Flecha - Fase 1", layout="wide")
+
 st.markdown("""
 <style>
-/* Fondo blanco en todo */
+/* Fondo general blanco y texto negro */
 html, body, [class*="st-"] {
     background-color: white !important;
     color: black !important;
 }
 
-/* Entradas, selects, sliders */
-input, select, textarea {
-    background-color: #ffffff !important;
+/* Entradas tipo input/number/select con gris claro */
+input, textarea, select {
+    background-color: #f5f5f5 !important;
     color: #000000 !important;
+    border: 1px solid #cccccc !important;
+    border-radius: 5px !important;
+}
+
+/* Botones +/- de number_input */
+button {
+    background-color: #f5f5f5 !important;
+    color: black !important;
     border: 1px solid #ccc !important;
 }
 
-/* Tablas y contenedores */
+/* Bordes de widgets más suaves */
+div[data-baseweb="input"] {
+    background-color: #f5f5f5 !important;
+    border: 1px solid #ccc !important;
+    border-radius: 5px !important;
+}
+
+/* Headers */
+h1, h2, h3, h4, h5 {
+    color: black !important;
+}
+
+/* Tablas y dataframes */
 .stDataFrame, .stTable {
     background-color: white !important;
     color: black !important;
     border: 1px solid #ccc !important;
-}
-
-/* Borde claro en los elementos de entrada */
-.css-1cpxqw2, .css-1d391kg, .css-1r6slb0 {
-    border: 1px solid #ccc !important;
-}
-
-/* Botones */
-button {
-    background-color: #f1f1f1 !important;
-    color: black !important;
-    border: 1px solid #ccc !important;
-}
-
-/* Títulos y subtítulos */
-h1, h2, h3, h4, h5, h6 {
-    color: #000000 !important;
 }
 </style>
 """, unsafe_allow_html=True)
