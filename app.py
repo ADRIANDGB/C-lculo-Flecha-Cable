@@ -43,7 +43,7 @@ with col_der:
             "Viento Área B (km/h)", "Viento Área B (m/s)", "Distancia del Vano (m)"
         ],
         "Valor": [
-            marca, calibre, xlpe_mm, tipo_conductor, carga_rotura_kgf,
+            Marca, calibre, xlpe_mm, tipo_conductor, carga_rotura_kgf,
             round(carga_rotura_N, 2), diametro_mm, round(diametro_m, 5),
             peso_kg_km, round(peso_N_m, 5), corriente, coef_seguridad,
             viento_areaA_kmh, round(viento_areaA_ms, 2),
