@@ -52,3 +52,65 @@ with col_der:
 
     df_resumen = pd.DataFrame(datos_resumen)
     st.dataframe(df_resumen, use_container_width=True)
+
+from xhtml2pdf import pisa
+import io
+
+# Convertir HTML a PDF usando xhtml2pdf
+def convertir_a_pdf(html_content):
+    pdf_stream = io.BytesIO()
+    pisa_status = pisa.CreatePDF(
+        io.StringIO(html_content), dest=pdf_stream
+    )
+    if pisa_status.err:
+        return None
+    return pdf_stream.getvalue()
+
+# Tabla convertida a HTML
+html_tabla = df_resumen.to_html(index=False)
+
+# HTML completo con estilo
+html_contenido = f"""
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {{
+            font-family: Arial, sans-serif;
+        }}
+        h2 {{
+            text-align: center;
+        }}
+        table {{
+            width: 100%;
+            border-collapse: collapse;
+        }}
+        th, td {{
+            border: 1px solid #444;
+            padding: 8px;
+            text-align: left;
+        }}
+        th {{
+            background-color: #f2f2f2;
+        }}
+    </style>
+</head>
+<body>
+    <h2>Resumen del Cable</h2>
+    {html_tabla}
+</body>
+</html>
+"""
+
+# Botón para descargar PDF
+if st.button("📄 Exportar resumen como PDF"):
+    pdf_bytes = convertir_a_pdf(html_contenido)
+    if pdf_bytes:
+        st.download_button(
+            label="📥 Descargar PDF",
+            data=pdf_bytes,
+            file_name="resumen_cable.pdf",
+            mime="application/pdf"
+        )
+    else:
+        st.error("❌ Error al generar el PDF")
