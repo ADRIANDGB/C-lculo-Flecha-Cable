@@ -252,3 +252,134 @@ try:
 
 except Exception as e:
     st.error(f"⚠️ Error al generar el gráfico: {e}")
+
+
+
+#FASE 4 - EXPORTACION DATOS
+
+from xhtml2pdf import pisa
+from io import BytesIO
+import base64
+import os
+
+# 👉 FUNCIONES DE EXPORTACIÓN A PDF
+def generar_imagen_del_grafico(fig):
+    img_buffer = BytesIO()
+    fig.savefig(img_buffer, format="png", bbox_inches="tight")
+    img_buffer.seek(0)
+    encoded = base64.b64encode(img_buffer.read()).decode('utf-8')
+    return f"<img src='data:image/png;base64,{encoded}' width='600'/>"
+
+def generar_pdf_html(tabla_html, tabla_areaA_html, tabla_areaB_html, grafico_html):
+    html = f"""
+    <html>
+    <head>
+        <style>
+            body {{ font-family: Arial, sans-serif; }}
+            h2 {{ color: #333; }}
+            table {{
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 10px;
+            }}
+            th, td {{
+                border: 1px solid #aaa;
+                padding: 6px;
+                text-align: left;
+            }}
+            th {{
+                background-color: #f2f2f2;
+            }}
+        </style>
+    </head>
+    <body>
+        <h2>Resumen del Cable</h2>
+        {tabla_html}
+
+        <h2>Cálculo de Flecha - Área A</h2>
+        {tabla_areaA_html}
+
+        <h2>Cálculo de Flecha - Área B</h2>
+        {tabla_areaB_html}
+
+        <h2>Visualización del Cable (Área A)</h2>
+        {grafico_html}
+    </body>
+    </html>
+    """
+    return html
+
+def convertir_html_a_pdf(html_content):
+    pdf_stream = BytesIO()
+    pisa_status = pisa.CreatePDF(html_content, dest=pdf_stream)
+    if pisa_status.err:
+        return None
+    return pdf_stream.getvalue()
+
+# 👉 BOTÓN PARA EXPORTAR
+if st.button("📄 Exportar todo como PDF"):
+    # Tabla resumen cable
+    tabla_cable_html = df_resumen.to_html(index=False)
+
+    # Recalcular datos de Área A y B (repetimos lógica para asegurar valores)
+    def datos_flecha(viento_ms):
+        pv = 0.613 * (viento_ms ** 2)
+        pc = pv * diametro_m
+        pa = np.sqrt(peso_N_m ** 2 + pc ** 2)
+        tension = carga_rotura_N / coef_seguridad
+        flecha = (pa * vano_m ** 2) / (8 * tension)
+        return {
+            "Presión Viento pv (N/m²)": round(pv, 2),
+            "Carga Horizontal del Viento Pc (N/m)": round(pc, 4),
+            "Peso Aparente Viento Pa (N/m)": round(pa, 4),
+            "Tensión Horizontal Admisible (N)": round(tension, 2),
+            "Flecha (m)": round(flecha, 4)
+        }
+
+    df_A = pd.DataFrame(datos_flecha(viento_areaA_ms).items(), columns=["Parámetro", "Valor"])
+    df_B = pd.DataFrame(datos_flecha(viento_areaB_ms).items(), columns=["Parámetro", "Valor"])
+
+    tabla_areaA_html = df_A.to_html(index=False)
+    tabla_areaB_html = df_B.to_html(index=False)
+
+    # Generar gráfico Área A
+    # Usamos nuevamente lo de la Fase 3
+    pv = 0.613 * (viento_areaA_ms ** 2)
+    pc = pv * diametro_m
+    pa = np.sqrt(peso_N_m ** 2 + pc ** 2)
+    tension_admisible = carga_rotura_N / coef_seguridad
+    flecha = (pa * vano_m ** 2) / (8 * tension_admisible)
+
+    x = np.linspace(0, vano_m, 100)
+    y = - (4 * flecha / vano_m ** 2) * x * (vano_m - x)
+    torre_altura = abs(flecha) * 1.8
+    y += torre_altura
+
+    fig, ax = plt.subplots(figsize=(10, 5))
+    ax.plot([0, vano_m], [torre_altura, torre_altura], color="gray", linestyle="--", label="Altura de fijación")
+    ax.plot(x, y, color="black", linewidth=2, label="Cable")
+    ax.plot([0, 0], [0, torre_altura], color="black", linewidth=3)
+    ax.plot([vano_m, vano_m], [0, torre_altura], color="black", linewidth=3)
+    ax.text(-0.5, torre_altura + 0.3, "Poste B", fontsize=11)
+    ax.text(vano_m - 1.2, torre_altura + 0.3, "Poste A", fontsize=11)
+    x_centro = vano_m / 2
+    y_centro = min(y)
+    ax.plot([x_centro, x_centro], [y_centro, torre_altura], color="red", linewidth=2, label="Flecha f")
+    ax.text(x_centro + 1, (y_centro + torre_altura) / 2, f"f ≈ {flecha:.3f} m", color="red", fontsize=10, weight="bold")
+    ax.axis("off")
+    grafico_html = generar_imagen_del_grafico(fig)
+
+    # Juntar todo en HTML y convertir a PDF
+    html_final = generar_pdf_html(tabla_cable_html, tabla_areaA_html, tabla_areaB_html, grafico_html)
+    pdf_bytes = convertir_html_a_pdf(html_final)
+
+    if pdf_bytes:
+        st.download_button(
+            label="📥 Descargar PDF completo",
+            data=pdf_bytes,
+            file_name="resumen_flecha_cable.pdf",
+            mime="application/pdf"
+        )
+    else:
+        st.error("❌ Hubo un error al generar el PDF.")
+
