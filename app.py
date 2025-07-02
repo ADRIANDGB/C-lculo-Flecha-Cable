@@ -155,12 +155,12 @@ def calcular_flecha(area_nombre, velocidad_ms):
     st.dataframe(df_resultados, use_container_width=True)
 
     # Resaltar flecha con estilo personalizado
-st.markdown(f"""
-<div style='background-color:#fffbe6;padding:10px;border:1px solid #e0d6a3;border-radius:10px'>
-    <span style='font-size:16px;color:#000000;font-weight:bold'>📏 Flecha calculada para {area_nombre}:</span>
-    <span style='font-size:18px;color:#b80000;font-weight:bold'> {flecha:.3f} m</span>
-</div>
-""", unsafe_allow_html=True)
+ st.markdown(f"""
+    <div style='background-color:#fffbe6;padding:10px;border:1px solid #e0d6a3;border-radius:10px'>
+        <span style='font-size:16px;color:#000000;font-weight:bold'>📏 Flecha calculada para {area_nombre}:</span>
+        <span style='font-size:18px;color:#b80000;font-weight:bold'> {flecha:.3f} m</span>
+    </div>
+    """, unsafe_allow_html=True)
 
 # Calcular para ambas áreas
 calcular_flecha("Área A", viento_areaA_ms)
