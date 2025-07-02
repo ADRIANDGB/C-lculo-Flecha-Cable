@@ -116,7 +116,7 @@ if st.button("📄 Exportar resumen como PDF"):
         st.error("❌ Error al generar el PDF")
 
 
-#Fase 2, calculo de Flecha
+# Fase 2, cálculo de Flecha
 import numpy as np
 
 st.markdown("---")
@@ -130,7 +130,7 @@ st.latex(r"P_a = \sqrt{w^2 + P_c^2}")
 st.latex(r"T = \frac{\text{Carga de rotura (N)}}{\text{Coeficiente de Seguridad}}")
 st.latex(r"f = \frac{P_a \cdot L^2}{8 \cdot T}")
 
-# === CALCULOS PARA AMBAS ÁREAS ===
+# === CÁLCULOS PARA AMBAS ÁREAS ===
 def calcular_flecha(area_nombre, velocidad_ms):
     pv = 0.613 * (velocidad_ms ** 2)
     pc = pv * diametro_m
@@ -154,12 +154,13 @@ def calcular_flecha(area_nombre, velocidad_ms):
     st.markdown(f"### 🔸 Resultados para {area_nombre}")
     st.dataframe(df_resultados, use_container_width=True)
 
-    # Resaltar flecha con estilo personalizado
-st.markdown(f"""
-<div style='background-color:#fffbe6;padding:10px;border:1px solid #e0d6a3;border-radius:10px'>
-    <b>📏 Flecha calculada para {area_nombre}:</b> <span style='font-size:18px;color:#b80000;font-weight:bold'>{flecha:.3f} m</span>
-</div>
-""", unsafe_allow_html=True)
+    # Resaltar flecha con estilo personalizado (texto negro + valor rojo)
+    st.markdown(f"""
+    <div style='background-color:#fffbe6;padding:10px;border:1px solid #e0d6a3;border-radius:10px'>
+        <span style='font-size:16px;color:#000000;font-weight:bold'>📏 Flecha calculada para {area_nombre}:</span>
+        <span style='font-size:18px;color:#b80000;font-weight:bold'> {flecha:.3f} m</span>
+    </div>
+    """, unsafe_allow_html=True)
 
 # Calcular para ambas áreas
 calcular_flecha("Área A", viento_areaA_ms)
