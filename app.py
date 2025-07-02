@@ -124,11 +124,26 @@ st.markdown("## 📉 Cálculo de la Flecha")
 
 # Mostrar fórmulas
 st.markdown("### 🧮 Fórmulas utilizadas")
+
+# Presión del viento
 st.latex(r"pv = 0.613 \cdot v^2")
+st.markdown("• Donde `pv` es la presión del viento (N/m²) y `v` es la velocidad del viento en m/s.")
+
+# Carga horizontal del viento
 st.latex(r"P_c = pv \cdot d")
+st.markdown("• `Pc` es la carga horizontal del viento (N/m) y `d` es el diámetro del cable en metros.")
+
+# Peso aparente
 st.latex(r"P_a = \sqrt{w^2 + P_c^2}")
+st.markdown("• `Pa` es el peso aparente del cable (N/m), `w` es el peso propio del cable (N/m), y `Pc` la carga horizontal del viento.")
+
+# Tensión horizontal admisible
 st.latex(r"T = \frac{\text{Carga de rotura (N)}}{\text{Coeficiente de Seguridad}}")
+st.markdown("• `T` es la tensión horizontal admisible (N).")
+
+# Cálculo de la flecha
 st.latex(r"f = \frac{P_a \cdot L^2}{8 \cdot T}")
+st.markdown("• `f` es la flecha (m), `L` es la longitud del vano (m), `Pa` es el peso aparente, y `T` es la tensión horizontal admisible.")
 
 # === CÁLCULOS PARA AMBAS ÁREAS ===
 def calcular_flecha(area_nombre, velocidad_ms):
