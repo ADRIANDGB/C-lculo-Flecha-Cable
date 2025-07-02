@@ -3,48 +3,49 @@ import pandas as pd
 
 st.set_page_config(page_title="Calculadora de Flecha - Fase 1", layout="wide")
 
+import streamlit as st
+
+# Configurar página
+st.set_page_config(page_title="Calculadora Nutricional", layout="centered")
+
+# 🌞 Forzar modo claro y estilos visuales
 st.markdown("""
-<style>
-/* Fondo general blanco y texto negro */
-html, body, [class*="st-"] {
-    background-color: white !important;
-    color: black !important;
-}
+    <style>
+    /* Fondo blanco y texto negro */
+    html, body, [data-testid="stApp"] {
+        background-color: #ffffff;
+        color: #000000;
+    }
 
-/* Entradas tipo input/number/select con gris claro */
-input, textarea, select {
-    background-color: #f5f5f5 !important;
-    color: #000000 !important;
-    border: 1px solid #cccccc !important;
-    border-radius: 5px !important;
-}
+    /* Estilo para los inputs */
+    input, select, textarea {
+        background-color: #f1f2f6 !important;
+        color: #000000 !important;
+        border: 1px solid #dcdde1 !important;
+        border-radius: 8px !important;
+        padding: 8px !important;
+    }
 
-/* Botones +/- de number_input */
-button {
-    background-color: #f5f5f5 !important;
-    color: black !important;
-    border: 1px solid #ccc !important;
-}
+    /* Estilo para selectbox moderno */
+    div[data-baseweb="select"] > div {
+        background-color: #f1f2f6 !important;
+        border-radius: 8px !important;
+        border: 1px solid #dcdde1 !important;
+    }
 
-/* Bordes de widgets más suaves */
-div[data-baseweb="input"] {
-    background-color: #f5f5f5 !important;
-    border: 1px solid #ccc !important;
-    border-radius: 5px !important;
-}
+    div[data-baseweb="select"] > div > div {
+        color: #000 !important;
+    }
 
-/* Headers */
-h1, h2, h3, h4, h5 {
-    color: black !important;
-}
-
-/* Tablas y dataframes */
-.stDataFrame, .stTable {
-    background-color: white !important;
-    color: black !important;
-    border: 1px solid #ccc !important;
-}
-</style>
+    /* Radio buttons redondos y mejor alineados */
+    div[role="radiogroup"] > label {
+        background-color: #f1f2f6 !important;
+        border-radius: 8px !important;
+        padding: 6px 10px !important;
+        margin-bottom: 4px;
+        border: 1px solid #dcdde1 !important;
+    }
+    </style>
 """, unsafe_allow_html=True)
 
 st.title("🧮 Calculadora de Flecha - Entrada de Datos y Resumen")
