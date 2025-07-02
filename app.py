@@ -114,3 +114,53 @@ if st.button("📄 Exportar resumen como PDF"):
         )
     else:
         st.error("❌ Error al generar el PDF")
+
+
+#Fase 2, calculo de Flecha
+import numpy as np
+
+st.markdown("---")
+st.markdown("## 📉 Cálculo de la Flecha")
+
+# Mostrar fórmulas
+st.markdown("### 🧮 Fórmulas utilizadas")
+st.latex(r"pv = 0.613 \cdot v^2")
+st.latex(r"P_c = pv \cdot d")
+st.latex(r"P_a = \sqrt{w^2 + P_c^2}")
+st.latex(r"T = \frac{\text{Carga de rotura (N)}}{\text{Coeficiente de Seguridad}}")
+st.latex(r"f = \frac{P_a \cdot L^2}{8 \cdot T}")
+
+# === CALCULOS PARA AMBAS ÁREAS ===
+def calcular_flecha(area_nombre, velocidad_ms):
+    pv = 0.613 * (velocidad_ms ** 2)
+    pc = pv * diametro_m
+    pa = np.sqrt(peso_N_m ** 2 + pc ** 2)
+    tension_admisible = carga_rotura_N / coef_seguridad
+    flecha = (pa * vano_m ** 2) / (8 * tension_admisible)
+
+    resultados = {
+        "Presión Viento pv (N/m²)": round(pv, 2),
+        "Carga Horizontal del Viento Pc (N/m)": round(pc, 4),
+        "Peso Aparente Viento Pa (N/m)": round(pa, 4),
+        "Tensión Horizontal Admisible (N)": round(tension_admisible, 2),
+        "Flecha (m)": round(flecha, 4)
+    }
+
+    df_resultados = pd.DataFrame({
+        "Datos calculados (" + area_nombre + ")": list(resultados.keys()),
+        "Valor": list(resultados.values())
+    })
+
+    st.markdown(f"### 🔸 Resultados para {area_nombre}")
+    st.dataframe(df_resultados, use_container_width=True)
+
+    # Resaltar flecha con estilo personalizado
+    st.markdown(f"""
+    <div style='background-color:#fffbe6;padding:10px;border:1px solid #e0d6a3;border-radius:10px'>
+        <b>📏 Flecha calculada para {area_nombre}:</b> <span style='font-size:18px;color:#b80000;font-weight:bold'>{flecha:.3f} m</span>
+    </div>
+    """, unsafe_allow_html=True)
+
+# Calcular para ambas áreas
+calcular_flecha("Área A", viento_areaA_ms)
+calcular_flecha("Área B", viento_areaB_ms)
