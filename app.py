@@ -1,6 +1,22 @@
 import streamlit as st
 import pandas as pd
 
+# Forzar modo claro (white mode)
+st.markdown(
+    """
+    <style>
+        html, body, [class*="st-"] {
+            background-color: white !important;
+            color: black !important;
+        }
+        .css-18e3th9 {
+            background-color: white !important;
+        }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 st.set_page_config(page_title="Calculadora de Flecha - Fase 1", layout="wide")
 
 st.title("🧮 Calculadora de Flecha - Entrada de Datos y Resumen")
