@@ -180,3 +180,61 @@ def calcular_flecha(area_nombre, velocidad_ms):
 # Calcular para ambas áreas
 calcular_flecha("Área A", viento_areaA_ms)
 calcular_flecha("Área B", viento_areaB_ms)
+
+
+
+#FASE 3 - VISUALIZACION
+
+import matplotlib.pyplot as plt
+
+st.markdown("## 🏗️ Esquema del Cable y Flecha (Área A)")
+
+# Recalcular la flecha para Área A
+pv = 0.613 * (viento_areaA_ms ** 2)
+pc = pv * diametro_m
+pa = np.sqrt(peso_N_m ** 2 + pc ** 2)
+tension_admisible = carga_rotura_N / coef_seguridad
+flecha = (pa * vano_m ** 2) / (8 * tension_admisible)
+
+# Puntos para la curva (forma parabólica)
+x = np.linspace(0, vano_m, 100)
+y = (4 * flecha / vano_m ** 2) * x * (vano_m - x)
+
+# Puntos de las torres
+torre_altura = flecha * 1.8  # altura visual ficticia
+torre_x = [0, vano_m]
+torre_y = [torre_altura, torre_altura]
+
+# Crear figura
+fig, ax = plt.subplots(figsize=(10, 5))
+
+# Dibujar línea recta (cuerda entre torres)
+ax.plot(torre_x, torre_y, color="gray", linestyle="--", label="Altura de fijación")
+
+# Dibujar curva del cable
+ax.plot(x, y, color="black", linewidth=2, label="Cable")
+
+# Dibujar torres como líneas verticales
+ax.plot([0, 0], [0, torre_altura], color="black", linewidth=2)
+ax.plot([vano_m, vano_m], [0, torre_altura], color="black", linewidth=2)
+
+# Flecha vertical en rojo
+x_centro = vano_m / 2
+y_centro = max(y)
+ax.plot([x_centro, x_centro], [y_centro, torre_altura], color="red", linestyle="-", linewidth=2, label="Flecha f")
+ax.text(x_centro + 1, (y_centro + torre_altura)/2, f"f ≈ {flecha:.3f} m", color="red", fontsize=10, weight="bold")
+
+# Etiquetas en las torres
+ax.text(-1, torre_altura + 0.2, "B", fontsize=12)
+ax.text(vano_m + 0.5, torre_altura + 0.2, "A", fontsize=12)
+
+# Ajustes
+ax.set_xlim(-5, vano_m + 5)
+ax.set_ylim(0, torre_altura + 1)
+ax.set_xlabel("Distancia horizontal (m)")
+ax.set_ylabel("Altura (m)")
+ax.set_title("Esquema de Tendido y Flecha - Área A")
+ax.grid(True)
+ax.legend()
+
+st.pyplot(fig)
