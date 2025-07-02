@@ -187,11 +187,22 @@ calcular_flecha("Área B", viento_areaB_ms)
 
 import matplotlib.pyplot as plt
 
-st.markdown("## 🏗️ Esquema del Cable y Flecha (Área A)")
+st.markdown("## 🏗️ Esquema del Cable y Flecha")
+
+# Selector de área
+area_seleccionada = st.selectbox("Selecciona el área para graficar:", ["Área A", "Área B"])
+
+# Determinar datos según el área
+if area_seleccionada == "Área A":
+    velocidad_viento = viento_areaA_ms
+    label_area = "Área A"
+else:
+    velocidad_viento = viento_areaB_ms
+    label_area = "Área B"
 
 # Intentar graficar si los datos son válidos
 try:
-    pv = 0.613 * (viento_areaA_ms ** 2)
+    pv = 0.613 * (velocidad_viento ** 2)
     pc = pv * diametro_m
     pa = np.sqrt(peso_N_m ** 2 + pc ** 2)
     tension_admisible = carga_rotura_N / coef_seguridad
@@ -205,36 +216,37 @@ try:
     y = - (4 * flecha / vano_m ** 2) * x * (vano_m - x)
 
     torre_altura = abs(flecha) * 1.8
-    y += torre_altura  # elevar toda la curva para que cuelgue desde la cima
+    y += torre_altura  # elevar la curva
 
     fig, ax = plt.subplots(figsize=(10, 5))
 
-    # Línea recta superior entre torres (altura de fijación)
+    # Línea superior (altura de fijación)
     ax.plot([0, vano_m], [torre_altura, torre_altura], color="gray", linestyle="--", label="Altura de fijación")
 
     # Curva del cable
     ax.plot(x, y, color="black", linewidth=2, label="Cable")
 
-    # Dibujar postes
+    # Postes
     ax.plot([0, 0], [0, torre_altura], color="black", linewidth=3)
     ax.plot([vano_m, vano_m], [0, torre_altura], color="black", linewidth=3)
     ax.text(-0.5, torre_altura + 0.3, "Poste B", fontsize=11)
     ax.text(vano_m - 1.2, torre_altura + 0.3, "Poste A", fontsize=11)
 
-    # Flecha en rojo
+    # Flecha vertical
     x_centro = vano_m / 2
     y_centro = min(y)
     ax.plot([x_centro, x_centro], [y_centro, torre_altura], color="red", linewidth=2, label="Flecha f")
     ax.text(x_centro + 1, (y_centro + torre_altura) / 2, f"f ≈ {flecha:.3f} m", color="red", fontsize=10, weight="bold")
 
-    # Estética
+    # Velocidad del viento
+    ax.text(vano_m / 2 - 5, torre_altura + 0.8, f"Vel. Viento: {velocidad_viento:.2f} m/s", fontsize=11, color="blue")
+
+    # Ajustes
     ax.set_xlim(-5, vano_m + 5)
-    ax.set_ylim(0, torre_altura + 1)
-    ax.set_title("Esquema de Tendido y Flecha - Área A")
-    ax.set_xlabel("Distancia horizontal (m)")
-    ax.set_ylabel("Altura (m)")
+    ax.set_ylim(0, torre_altura + 1.5)
+    ax.set_title(f"Esquema de Tendido y Flecha - {label_area}")
+    ax.axis("off")
     ax.legend()
-    ax.axis("off")  # ocultar ejes y fondo
 
     st.pyplot(fig)
 
