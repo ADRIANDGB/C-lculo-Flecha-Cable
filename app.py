@@ -68,4 +68,9 @@ with col_der:
     }
 
     df_resumen = pd.DataFrame(datos_resumen)
-    st.dataframe(df_resumen, use_container_width=True)
+st.markdown("#### Tabla de Características (Estilo Claro)")
+st.markdown(
+    df_resumen.to_html(index=False, border=0, justify="left"),
+    unsafe_allow_html=True
+)
+
