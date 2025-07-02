@@ -10,6 +10,7 @@ st.markdown("## 🔌 Datos del Cable y Conversión")
 col_izq, col_der = st.columns([1.3, 1])
 
 with col_izq:
+    Marca = st.text_input("Marca", placeholder="Ej. PROCABLES")
     calibre = st.text_input("Calibre", placeholder="Ej. 6 AWG")
     xlpe_mm = st.number_input("XLPE (mm)", value=0.0, step=0.01)
     tipo_conductor = st.selectbox("Tipo Conductor", ["AAC", "AAAC", "ACSR"])
@@ -35,14 +36,14 @@ with col_der:
 
     datos_resumen = {
         "Parámetro": [
-            "Calibre", "XLPE (mm)", "Tipo Conductor", "Carga Rotura (kgf)",
+            "Marca", "Calibre", "XLPE (mm)", "Tipo Conductor", "Carga Rotura (kgf)",
             "Carga Rotura (N)", "Diámetro Total (mm)", "Diámetro Total (m)",
             "Peso (kg/km)", "Peso (N/m)", "Corriente (A)", "Coef. Seguridad",
             "Viento Área A (km/h)", "Viento Área A (m/s)",
             "Viento Área B (km/h)", "Viento Área B (m/s)", "Distancia del Vano (m)"
         ],
         "Valor": [
-            calibre, xlpe_mm, tipo_conductor, carga_rotura_kgf,
+            marca, calibre, xlpe_mm, tipo_conductor, carga_rotura_kgf,
             round(carga_rotura_N, 2), diametro_mm, round(diametro_m, 5),
             peso_kg_km, round(peso_N_m, 5), corriente, coef_seguridad,
             viento_areaA_kmh, round(viento_areaA_ms, 2),
