@@ -8,45 +8,7 @@ import streamlit as st
 # Configurar página
 st.set_page_config(page_title="Calculadora Nutricional", layout="centered")
 
-# 🌞 Forzar modo claro y estilos visuales
-st.markdown("""
-    <style>
-    /* Fondo blanco y texto negro */
-    html, body, [data-testid="stApp"] {
-        background-color: #ffffff;
-        color: #000000;
-    }
 
-    /* Estilo para los inputs */
-    input, select, textarea {
-        background-color: #f1f2f6 !important;
-        color: #000000 !important;
-        border: 1px solid #dcdde1 !important;
-        border-radius: 8px !important;
-        padding: 8px !important;
-    }
-
-    /* Estilo para selectbox moderno */
-    div[data-baseweb="select"] > div {
-        background-color: #f1f2f6 !important;
-        border-radius: 8px !important;
-        border: 1px solid #dcdde1 !important;
-    }
-
-    div[data-baseweb="select"] > div > div {
-        color: #000 !important;
-    }
-
-    /* Radio buttons redondos y mejor alineados */
-    div[role="radiogroup"] > label {
-        background-color: #f1f2f6 !important;
-        border-radius: 8px !important;
-        padding: 6px 10px !important;
-        margin-bottom: 4px;
-        border: 1px solid #dcdde1 !important;
-    }
-    </style>
-""", unsafe_allow_html=True)
 
 st.title("🧮 Calculadora de Flecha - Entrada de Datos y Resumen")
 
