@@ -9,6 +9,32 @@ import streamlit as st
 st.set_page_config(page_title="Calculadora Nutricional", layout="centered")
 
 
+st.markdown("""
+    <style>
+    /* Moderniza los campos sin forzar modo claro */
+    input, select, textarea {
+        background-color: rgba(255, 255, 255, 0.05) !important;
+        color: inherit !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        border-radius: 8px !important;
+        padding: 8px !important;
+    }
+
+    div[data-baseweb="select"] > div {
+        background-color: rgba(255, 255, 255, 0.05) !important;
+        border-radius: 8px !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    }
+
+    div[role="radiogroup"] > label {
+        background-color: rgba(255, 255, 255, 0.05) !important;
+        border-radius: 8px !important;
+        padding: 6px 10px !important;
+        margin-bottom: 4px;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
 st.title("🧮 Calculadora de Flecha - Entrada de Datos y Resumen")
 
