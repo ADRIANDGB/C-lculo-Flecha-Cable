@@ -5,3 +5,4 @@ pandas
 numpy
 plotly
 streamlit-extras
+kaleido==0.2.1
