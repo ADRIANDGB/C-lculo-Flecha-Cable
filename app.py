@@ -150,35 +150,62 @@ if st.button("📄 Exportar resumen como PDF"):
 
 
 # Fase 2, cálculo de Flecha
+import streamlit as st
+import pandas as pd
 import numpy as np
 
-st.markdown("---")
-st.markdown("## 📉 Cálculo de la Flecha")
+# Configuración de página
+st.set_page_config(page_title="Cálculo de la Flecha", layout="wide")
 
-# Mostrar fórmulas
+# Estilos CSS personalizados para tarjetas
+st.markdown("""
+    <style>
+    .card {
+        background-color: white;
+        border: 1px solid #E0E0E0;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.05);
+        text-align: center;
+    }
+    .metric-title {
+        font-size: 14px;
+        color: #6e6e6e;
+    }
+    .metric-value {
+        font-size: 24px;
+        font-weight: bold;
+        color: #2c3e50;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+# Fórmulas
+st.markdown("## 📉 Cálculo de la Flecha")
+st.markdown("---")
 st.markdown("### 🧮 Fórmulas utilizadas")
 
-# Presión del viento
 st.latex(r"pv = 0.613 \cdot v^2")
 st.markdown("• Donde `pv` es la presión del viento (N/m²) y `v` es la velocidad del viento en m/s.")
-
-# Carga horizontal del viento
 st.latex(r"P_c = pv \cdot d")
-st.markdown("• `Pc` es la carga horizontal del viento (N/m) y `d` es el diámetro del cable en metros.")
-
-# Peso aparente
+st.markdown("• `Pc` es la carga horizontal del viento (N/m).")
 st.latex(r"P_a = \sqrt{w^2 + P_c^2}")
-st.markdown("• `Pa` es el peso aparente del cable (N/m), `w` es el peso propio del cable (N/m), y `Pc` la carga horizontal del viento.")
-
-# Tensión horizontal admisible
+st.markdown("• `Pa` es el peso aparente (N/m).")
 st.latex(r"T = \frac{\text{Carga de rotura (N)}}{\text{Coeficiente de Seguridad}}")
 st.markdown("• `T` es la tensión horizontal admisible (N).")
-
-# Cálculo de la flecha
 st.latex(r"f = \frac{P_a \cdot L^2}{8 \cdot T}")
-st.markdown("• `f` es la flecha (m), `L` es la longitud del vano (m), `Pa` es el peso aparente, y `T` es la tensión horizontal admisible.")
+st.markdown("• `f` es la flecha (m).")
 
-# === CÁLCULOS PARA AMBAS ÁREAS ===
+# Datos de ejemplo
+diametro_m = 0.014  # Diámetro del conductor
+peso_N_m = 9.2      # Peso propio (N/m)
+carga_rotura_N = 2550 * 9.81  # 255 kgf
+coef_seguridad = 2
+vano_m = 50
+viento_areaA_ms = 31.94  # 115 km/h
+viento_areaB_ms = 38.88  # 140 km/h
+
+# Función con tarjetas
 def calcular_flecha(area_nombre, velocidad_ms):
     pv = 0.613 * (velocidad_ms ** 2)
     pc = pv * diametro_m
@@ -187,32 +214,28 @@ def calcular_flecha(area_nombre, velocidad_ms):
     flecha = (pa * vano_m ** 2) / (8 * tension_admisible)
 
     resultados = {
-        "Presión Viento pv (N/m²)": round(pv, 2),
-        "Carga Horizontal del Viento Pc (N/m)": round(pc, 4),
-        "Peso Aparente Viento Pa (N/m)": round(pa, 4),
-        "Tensión Horizontal Admisible (N)": round(tension_admisible, 2),
+        "Presión del viento (N/m²)": round(pv, 2),
+        "Carga horizontal Pc (N/m)": round(pc, 4),
+        "Peso aparente Pa (N/m)": round(pa, 4),
+        "Tensión admisible (N)": round(tension_admisible, 2),
         "Flecha (m)": round(flecha, 4)
     }
 
-    df_resultados = pd.DataFrame({
-        "Datos calculados (" + area_nombre + ")": list(resultados.keys()),
-        "Valor": list(resultados.values())
-    })
-
     st.markdown(f"### 🔸 Resultados para {area_nombre}")
-    st.dataframe(df_resultados, use_container_width=True)
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.metric("Presión viento", f"{resultados['Presión del viento (N/m²)']} N/m²")
+        st.metric("Carga horizontal", f"{resultados['Carga horizontal Pc (N/m)']} N/m")
+    with col2:
+        st.metric("Peso aparente", f"{resultados['Peso aparente Pa (N/m)']} N/m")
+        st.metric("Tensión admisible", f"{resultados['Tensión admisible (N)']} N")
+    with col3:
+        st.metric("📏 Flecha", f"{resultados['Flecha (m)']} m")
 
-    # Resaltar flecha con estilo personalizado (texto negro + valor rojo)
-    st.markdown(f"""
-    <div style='background-color:#fffbe6;padding:10px;border:1px solid #e0d6a3;border-radius:10px'>
-        <span style='font-size:16px;color:#000000;font-weight:bold'>📏 Flecha calculada para {area_nombre}:</span>
-        <span style='font-size:18px;color:#b80000;font-weight:bold'> {flecha:.3f} m</span>
-    </div>
-    """, unsafe_allow_html=True)
-
-# Calcular para ambas áreas
+# Mostrar tarjetas por área
 calcular_flecha("Área A", viento_areaA_ms)
 calcular_flecha("Área B", viento_areaB_ms)
+
 
 
 
