@@ -6,7 +6,7 @@ st.set_page_config(page_title="Calculadora de Flecha - Fase 1", layout="wide")
 import streamlit as st
 
 # Configurar página
-st.set_page_config(page_title="Calculadora Nutricional", layout="centered")
+st.set_page_config(page_title="Calculadora Flecha", layout="centered")
 
 
 st.markdown("""
@@ -42,7 +42,7 @@ st.markdown("## 🔌 Datos del Cable y Conversión")
 
 col_izq, col_der = st.columns([1.3, 1])
 
-with col_izq:
+with st.sidebar.expander("📥 Ingreso de Datos del Cable", expanded=True):
     calibre = st.text_input("Calibre", placeholder="Ej. 6 AWG")
     xlpe_mm = st.number_input("XLPE (mm)", value=0.0, step=0.01)
     tipo_conductor = st.selectbox("Tipo Conductor", ["AAC", "AAAC", "ACSR"])
@@ -56,16 +56,6 @@ with col_izq:
     viento_areaA_kmh = st.number_input("Velocidad Viento (km/h) - Área A", value=0.0)
     viento_areaB_kmh = st.number_input("Velocidad Viento (km/h) - Área B", value=0.0)
     vano_m = st.number_input("Distancia del Vano (m)", value=0.0)
-
-with col_der:
-    st.markdown("### 📋 Resumen del Cable")
-
-    carga_rotura_N = carga_rotura_kgf * 9.81
-    diametro_m = diametro_mm / 1000
-    peso_N_m = (peso_kg_km * 9.81) / 1000
-    viento_areaA_ms = viento_areaA_kmh / 3.6
-    viento_areaB_ms = viento_areaB_kmh / 3.6
-
     datos_resumen = {
         "Parámetro": [
             "Calibre", "XLPE (mm)", "Tipo Conductor", "Carga Rotura (kgf)",
