@@ -179,10 +179,24 @@ st.markdown("""
             font-weight: bold;
             color: #222;
         }
-        .destacado {
-            color: #b80000;
-            font-size: 26px;
+        .tarjeta-flecha {
+            background-color: white;
+            border: 2px solid #e6b8b8;
+            border-radius: 14px;
+            padding: 1.2rem;
+            box-shadow: 3px 3px 12px rgba(0,0,0,0.07);
+            text-align: center;
+        }
+        .tarjeta-flecha h3 {
+            font-size: 16px;
+            color: #880000;
+            margin-bottom: 5px;
+        }
+        .tarjeta-flecha p {
+            font-size: 34px;
             font-weight: bold;
+            color: #b80000;
+            margin: 0;
         }
     </style>
 """, unsafe_allow_html=True)
@@ -233,9 +247,9 @@ def calcular_flecha(area_nombre, velocidad_ms):
 
     with col3:
         st.markdown(f"""
-        <div class="tarjeta">
+        <div class="tarjeta-flecha">
             <h3>📏 Flecha</h3>
-            <p class="destacado">{flecha:.3f} m</p>
+            <p>{flecha:.3f} m</p>
         </div>""", unsafe_allow_html=True)
 
 # === MOSTRAR RESULTADOS
