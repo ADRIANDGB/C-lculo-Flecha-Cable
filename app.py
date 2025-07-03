@@ -218,7 +218,9 @@ calcular_flecha("Área B", viento_areaB_ms)
 
 #FASE 3 - VISUALIZACION
 
-import matplotlib.pyplot as plt
+import streamlit as st
+import numpy as np
+import plotly.graph_objects as go
 
 st.markdown("## 🏗️ Esquema del Cable y Flecha")
 
@@ -244,44 +246,52 @@ try:
     if any(np.isnan(val) or np.isinf(val) for val in [pv, pc, pa, flecha]):
         raise ValueError("❌ Hay valores inválidos en los cálculos.")
 
-    # Parábola invertida (porque el cable cuelga)
+    # Coordenadas de la curva del cable
     x = np.linspace(0, vano_m, 100)
     y = - (4 * flecha / vano_m ** 2) * x * (vano_m - x)
 
     torre_altura = abs(flecha) * 1.8
     y += torre_altura  # elevar la curva
 
-    fig, ax = plt.subplots(figsize=(10, 5))
-
-    # Línea superior (altura de fijación)
-    ax.plot([0, vano_m], [torre_altura, torre_altura], color="gray", linestyle="--", label="Altura de fijación")
-
-    # Curva del cable
-    ax.plot(x, y, color="black", linewidth=2, label="Cable")
-
-    # Postes
-    ax.plot([0, 0], [0, torre_altura], color="black", linewidth=3)
-    ax.plot([vano_m, vano_m], [0, torre_altura], color="black", linewidth=3)
-    ax.text(-0.5, torre_altura + 0.3, "Poste B", fontsize=11)
-    ax.text(vano_m - 1.2, torre_altura + 0.3, "Poste A", fontsize=11)
-
-    # Flecha vertical
     x_centro = vano_m / 2
     y_centro = min(y)
-    ax.plot([x_centro, x_centro], [y_centro, torre_altura], color="red", linewidth=2, label="Flecha f")
-    ax.text(x_centro + 1, (y_centro + torre_altura) / 2, f"f ≈ {flecha:.3f} m", color="red", fontsize=10, weight="bold")
 
-    # Velocidad del viento
-    ax.text(vano_m / 2 - 5, torre_altura + 0.8, f"Vel. Viento: {velocidad_viento:.2f} m/s", fontsize=11, color="blue")
+    fig = go.Figure()
 
-    # Ajustes
-    ax.set_xlim(-5, vano_m + 5)
-    ax.set_ylim(0, torre_altura + 1.5)
-    ax.set_title(f"Esquema de Tendido y Flecha - {label_area}")
-    ax.axis("off")
-    ax.legend()
+    # Curva del cable
+    fig.add_trace(go.Scatter(x=x, y=y, mode='lines', line=dict(color='black', width=3), name='Cable'))
 
-    st.pyplot(fig)
+    # Poste izquierdo
+    fig.add_trace(go.Scatter(x=[0, 0], y=[0, torre_altura], mode='lines', line=dict(color='black', width=4), showlegend=False))
+    fig.add_annotation(x=-1, y=torre_altura + 0.3, text="Poste B", showarrow=False, font=dict(size=12))
+
+    # Poste derecho
+    fig.add_trace(go.Scatter(x=[vano_m, vano_m], y=[0, torre_altura], mode='lines', line=dict(color='black', width=4), showlegend=False))
+    fig.add_annotation(x=vano_m - 1.2, y=torre_altura + 0.3, text="Poste A", showarrow=False, font=dict(size=12))
+
+    # Altura de fijación
+    fig.add_trace(go.Scatter(x=[0, vano_m], y=[torre_altura, torre_altura], mode='lines', line=dict(color='gray', dash='dash'), name='Altura de fijación'))
+
+    # Flecha
+    fig.add_trace(go.Scatter(x=[x_centro, x_centro], y=[y_centro, torre_altura], mode='lines', line=dict(color='red', width=2), name='Flecha f'))
+    fig.add_annotation(x=x_centro + 1, y=(y_centro + torre_altura)/2, text=f"f ≈ {flecha:.3f} m", showarrow=False, font=dict(color='red', size=12))
+
+    # Velocidad viento
+    fig.add_annotation(x= vano_m / 2 - 3, y=torre_altura + 0.8,
+                       text=f"🌬️ Viento: {velocidad_viento:.2f} m/s", showarrow=False,
+                       font=dict(color='blue', size=12))
+
+    # Configuración visual
+    fig.update_layout(
+        title=f"Esquema de Tendido y Flecha - {label_area}",
+        margin=dict(l=20, r=20, t=40, b=20),
+        showlegend=True,
+        height=500
+    )
+    fig.update_xaxes(visible=False)
+    fig.update_yaxes(visible=False)
+
+    st.plotly_chart(fig, use_container_width=True)
 
 except Exception as e:
     st.error(f"⚠️ Error al generar el gráfico: {e}")
