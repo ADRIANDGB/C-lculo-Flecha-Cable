@@ -154,33 +154,87 @@ fig.update_xaxes(visible=False)
 fig.update_yaxes(visible=False)
 st.plotly_chart(fig, use_container_width=True)
 
-def exportar_pdf():
-    buffer = BytesIO()
+
+#Fase 4 
+def exportar_pdf_completo(figura_plotly):
+    # Generar imagen del gráfico
+    img_buffer = BytesIO()
+    figura_plotly.write_image(img_buffer, format="png", scale=2)
+    img_base64 = base64.b64encode(img_buffer.getvalue()).decode()
+
+    # HTML de la tabla de datos
     tabla_html = df_resumen.to_html(index=False)
+
+    # HTML de las fórmulas y resultados (estáticos por ahora)
+    formulas_html = """
+    <h2>Fórmulas Utilizadas</h2>
+    <ul style="text-align: left; max-width: 700px; margin: auto;">
+        <li><strong>pv = 0.613 · v²</strong> &nbsp;→ Presión del viento</li>
+        <li><strong>Pc = pv · d</strong> &nbsp;→ Carga horizontal del viento</li>
+        <li><strong>Pa = √(w² + Pc²)</strong> &nbsp;→ Peso aparente</li>
+        <li><strong>T = Carga de rotura (N) / Coef. Seguridad</strong> &nbsp;→ Tensión admisible</li>
+        <li><strong>f = (Pa · L²) / (8 · T)</strong> &nbsp;→ Flecha</li>
+    </ul>
+    """
+
+    resultados_html = f"""
+    <h2>Resultados de Flecha</h2>
+    <table style="width: 70%; margin: auto; border-collapse: collapse;">
+        <tr><th>Área</th><th>Flecha (m)</th></tr>
+        <tr><td>Área A</td><td>{flecha_A:.4f}</td></tr>
+        <tr><td>Área B</td><td>{flecha_B:.4f}</td></tr>
+    </table>
+    """
+
+    # HTML completo
     contenido_html = f"""
     <html>
     <head>
+        <meta charset="UTF-8">
         <style>
-            body {{ font-family: Arial, sans-serif; text-align: center; }}
-            h2 {{ color: #2F4F4F; }}
-            table {{ width: 90%; margin: auto; border-collapse: collapse; }}
-            th, td {{ border: 1px solid #999; padding: 8px; text-align: center; }}
-            th {{ background-color: #eee; }}
+            body {{
+                font-family: Arial, sans-serif;
+                text-align: center;
+                color: #333;
+            }}
+            h1, h2 {{
+                color: #2F4F4F;
+            }}
+            table {{
+                border-collapse: collapse;
+                margin-top: 20px;
+            }}
+            th, td {{
+                border: 1px solid #999;
+                padding: 8px 12px;
+            }}
+            th {{
+                background-color: #f2f2f2;
+            }}
         </style>
     </head>
     <body>
+        <h1>📘 Reporte de Cálculo de Flecha</h1>
         <h2>Resumen de Datos del Cable</h2>
         {tabla_html}
+        {formulas_html}
+        {resultados_html}
+        <h2>Esquema Visual del Cable</h2>
+        <img src="data:image/png;base64,{img_base64}" style="width:85%; border:1px solid #ccc; margin-top:15px;"/>
     </body>
     </html>
     """
+
+    # Convertir a PDF
+    buffer = BytesIO()
     pisa_status = pisa.CreatePDF(contenido_html, dest=buffer)
     if not pisa_status.err:
-        st.download_button("📄 Descargar PDF del Resumen", buffer.getvalue(), file_name="resumen_flecha.pdf", mime="application/pdf")
+        st.download_button("📥 Descargar Reporte Completo en PDF", buffer.getvalue(), file_name="reporte_flecha_cable.pdf", mime="application/pdf")
     else:
-        st.error("Error al generar el PDF.")
+        st.error("❌ Error al generar el PDF completo.")
 
-exportar_pdf()
+# Llamar al exportador con la figura generada
+exportar_pdf_completo(fig)
 
 
 
