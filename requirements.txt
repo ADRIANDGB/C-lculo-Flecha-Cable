@@ -1,2 +1,5 @@
 xhtml2pdf
 matplotlib
+streamlit
+pandas
+numpy
