@@ -151,88 +151,94 @@ if st.button("📄 Exportar resumen como PDF"):
 
 # Fase 2, cálculo de Flecha
 import streamlit as st
-import pandas as pd
 import numpy as np
 
-# Configuración de página
-st.set_page_config(page_title="Cálculo de la Flecha", layout="wide")
+# CONFIGURACIÓN DE PÁGINA
+st.set_page_config(page_title="Flecha de Cable", layout="wide")
 
-# Estilos CSS personalizados para tarjetas
+# CSS para tarjetas personalizadas
 st.markdown("""
     <style>
-    .card {
-        background-color: white;
-        border: 1px solid #E0E0E0;
-        border-radius: 10px;
-        padding: 20px;
-        box-shadow: 2px 2px 8px rgba(0,0,0,0.05);
-        text-align: center;
-    }
-    .metric-title {
-        font-size: 14px;
-        color: #6e6e6e;
-    }
-    .metric-value {
-        font-size: 24px;
-        font-weight: bold;
-        color: #2c3e50;
-    }
+        .tarjeta {
+            background-color: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.05);
+            text-align: center;
+            font-size: 14px;
+        }
+        .tarjeta h3 {
+            margin: 0;
+            font-size: 14px;
+            color: #555;
+        }
+        .tarjeta p {
+            margin: 0;
+            font-size: 20px;
+            font-weight: bold;
+            color: #222;
+        }
+        .destacado {
+            color: #b80000;
+            font-size: 26px;
+            font-weight: bold;
+        }
     </style>
 """, unsafe_allow_html=True)
 
-# Fórmulas
-st.markdown("## 📉 Cálculo de la Flecha")
-st.markdown("---")
-st.markdown("### 🧮 Fórmulas utilizadas")
-
-st.latex(r"pv = 0.613 \cdot v^2")
-st.markdown("• Donde `pv` es la presión del viento (N/m²) y `v` es la velocidad del viento en m/s.")
-st.latex(r"P_c = pv \cdot d")
-st.markdown("• `Pc` es la carga horizontal del viento (N/m).")
-st.latex(r"P_a = \sqrt{w^2 + P_c^2}")
-st.markdown("• `Pa` es el peso aparente (N/m).")
-st.latex(r"T = \frac{\text{Carga de rotura (N)}}{\text{Coeficiente de Seguridad}}")
-st.markdown("• `T` es la tensión horizontal admisible (N).")
-st.latex(r"f = \frac{P_a \cdot L^2}{8 \cdot T}")
-st.markdown("• `f` es la flecha (m).")
-
-# Datos de ejemplo
-diametro_m = 0.014  # Diámetro del conductor
-peso_N_m = 9.2      # Peso propio (N/m)
-carga_rotura_N = 2550 * 9.81  # 255 kgf
+# === PARÁMETROS
+diametro_m = 0.014  # m
+peso_N_m = 9.2
+carga_rotura_N = 2550 * 9.81
 coef_seguridad = 2
 vano_m = 50
-viento_areaA_ms = 31.94  # 115 km/h
-viento_areaB_ms = 38.88  # 140 km/h
+viento_areaA_ms = 31.94
+viento_areaB_ms = 38.88
 
-# Función con tarjetas
+# === FUNCIÓN DE CÁLCULO
 def calcular_flecha(area_nombre, velocidad_ms):
     pv = 0.613 * (velocidad_ms ** 2)
     pc = pv * diametro_m
     pa = np.sqrt(peso_N_m ** 2 + pc ** 2)
-    tension_admisible = carga_rotura_N / coef_seguridad
-    flecha = (pa * vano_m ** 2) / (8 * tension_admisible)
-
-    resultados = {
-        "Presión del viento (N/m²)": round(pv, 2),
-        "Carga horizontal Pc (N/m)": round(pc, 4),
-        "Peso aparente Pa (N/m)": round(pa, 4),
-        "Tensión admisible (N)": round(tension_admisible, 2),
-        "Flecha (m)": round(flecha, 4)
-    }
+    tension = carga_rotura_N / coef_seguridad
+    flecha = (pa * vano_m ** 2) / (8 * tension)
 
     st.markdown(f"### 🔸 Resultados para {area_nombre}")
+
     col1, col2, col3 = st.columns(3)
     with col1:
-        st.metric("Presión viento", f"{resultados['Presión del viento (N/m²)']} N/m²")
-        st.metric("Carga horizontal", f"{resultados['Carga horizontal Pc (N/m)']} N/m")
-    with col2:
-        st.metric("Peso aparente", f"{resultados['Peso aparente Pa (N/m)']} N/m")
-        st.metric("Tensión admisible", f"{resultados['Tensión admisible (N)']} N")
-    with col3:
-        st.metric("📏 Flecha", f"{resultados['Flecha (m)']} m")
+        st.markdown(f"""
+        <div class="tarjeta">
+            <h3>Presión viento</h3>
+            <p>{pv:.2f} N/m²</p>
+        </div>""", unsafe_allow_html=True)
+        st.markdown(f"""
+        <div class="tarjeta">
+            <h3>Carga horizontal</h3>
+            <p>{pc:.4f} N/m</p>
+        </div>""", unsafe_allow_html=True)
 
-# Mostrar tarjetas por área
+    with col2:
+        st.markdown(f"""
+        <div class="tarjeta">
+            <h3>Peso aparente</h3>
+            <p>{pa:.4f} N/m</p>
+        </div>""", unsafe_allow_html=True)
+        st.markdown(f"""
+        <div class="tarjeta">
+            <h3>Tensión admisible</h3>
+            <p>{tension:.2f} N</p>
+        </div>""", unsafe_allow_html=True)
+
+    with col3:
+        st.markdown(f"""
+        <div class="tarjeta">
+            <h3>📏 Flecha</h3>
+            <p class="destacado">{flecha:.3f} m</p>
+        </div>""", unsafe_allow_html=True)
+
+# === MOSTRAR RESULTADOS
 calcular_flecha("Área A", viento_areaA_ms)
 calcular_flecha("Área B", viento_areaB_ms)
 
