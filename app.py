@@ -153,3 +153,34 @@ fig.update_layout(title=f"Esquema de Tendido y Flecha - {area}", height=500, sho
 fig.update_xaxes(visible=False)
 fig.update_yaxes(visible=False)
 st.plotly_chart(fig, use_container_width=True)
+
+def exportar_pdf():
+    buffer = BytesIO()
+    tabla_html = df_resumen.to_html(index=False)
+    contenido_html = f"""
+    <html>
+    <head>
+        <style>
+            body {{ font-family: Arial, sans-serif; text-align: center; }}
+            h2 {{ color: #2F4F4F; }}
+            table {{ width: 90%; margin: auto; border-collapse: collapse; }}
+            th, td {{ border: 1px solid #999; padding: 8px; text-align: center; }}
+            th {{ background-color: #eee; }}
+        </style>
+    </head>
+    <body>
+        <h2>Resumen de Datos del Cable</h2>
+        {tabla_html}
+    </body>
+    </html>
+    """
+    pisa_status = pisa.CreatePDF(contenido_html, dest=buffer)
+    if not pisa_status.err:
+        st.download_button("📄 Descargar PDF del Resumen", buffer.getvalue(), file_name="resumen_flecha.pdf", mime="application/pdf")
+    else:
+        st.error("Error al generar el PDF.")
+
+exportar_pdf()
+
+
+
