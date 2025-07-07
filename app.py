@@ -122,6 +122,7 @@ flecha_B = calcular_flecha("Área B", viento_areaB_ms)
 
 # FASE 3 - VISUALIZACIÓN DE FLECHA
 
+# FASE 3 - VISUALIZACIÓN DE FLECHA
 st.markdown("---")
 st.markdown("## 🏗️ Visualización del Cable y Flecha")
 
@@ -129,30 +130,6 @@ area = st.selectbox("Selecciona área a graficar:", ["Área A", "Área B"])
 vel = viento_areaA_ms if area == "Área A" else viento_areaB_ms
 flecha = flecha_A if area == "Área A" else flecha_B
 
-pv = 0.613 * (vel ** 2)
-pc = pv * diametro_m
-pa = np.sqrt(peso_N_m ** 2 + pc ** 2)
-tension_admisible = carga_rotura_N / coef_seguridad
-
-x = np.linspace(0, vano_m, 100)
-y = - (4 * flecha / vano_m ** 2) * x * (vano_m - x)
-torre_altura = abs(flecha) * 1.8
-y += torre_altura
-x_centro = vano_m / 2
-y_centro = min(y)
-
-fig = go.Figure()
-fig.add_trace(go.Scatter(x=x, y=y, mode='lines', line=dict(color='black', width=3), name='Cable'))
-fig.add_trace(go.Scatter(x=[0, 0], y=[0, torre_altura], mode='lines', line=dict(color='black', width=4)))
-fig.add_trace(go.Scatter(x=[vano_m, vano_m], y=[0, torre_altura], mode='lines', line=dict(color='black', width=4)))
-fig.add_trace(go.Scatter(x=[0, vano_m], y=[torre_altura, torre_altura], mode='lines', line=dict(color='gray', dash='dash')))
-fig.add_trace(go.Scatter(x=[x_centro, x_centro], y=[y_centro, torre_altura], mode='lines', line=dict(color='red', width=2)))
-fig.add_annotation(x=x_centro + 1, y=(y_centro + torre_altura)/2, text=f"f ≈ {flecha:.3f} m", font=dict(color='red', size=14))
-fig.add_annotation(x= vano_m / 2 - 3, y=torre_altura + 0.8, text=f"🌬️ Viento: {vel:.2f} m/s", font=dict(color='blue', size=12))
-fig.update_layout(title=f"Esquema de Tendido y Flecha - {area}", height=500, showlegend=False)
-fig.update_xaxes(visible=False)
-fig.update_yaxes(visible=False)
-st.plotly_chart(fig, use_container_width=True)
 
 
 #Fase 4 
