@@ -120,15 +120,128 @@ def calcular_flecha(area_nombre, velocidad_ms):
 flecha_A = calcular_flecha("Área A", viento_areaA_ms)
 flecha_B = calcular_flecha("Área B", viento_areaB_ms)
 
-# FASE 3 - VISUALIZACIÓN DE FLECHA
+
+
+
+
+
+
+
 
 # FASE 3 - VISUALIZACIÓN DE FLECHA
+# FASE 3 - VISUALIZACIÓN 3D
 st.markdown("---")
-st.markdown("## 🏗️ Visualización del Cable y Flecha")
+st.markdown("## 🏗️ Visualización 3D del Cable y Flecha")
 
 area = st.selectbox("Selecciona área a graficar:", ["Área A", "Área B"])
 vel = viento_areaA_ms if area == "Área A" else viento_areaB_ms
 flecha = flecha_A if area == "Área A" else flecha_B
+
+distancia = vano_m
+altura_poste = abs(flecha) * 1.8
+flecha_valor = flecha
+
+x = np.linspace(0, distancia, 100)
+z_flecha = -4 * flecha_valor / (distancia ** 2) * (x - distancia / 2) ** 2 + flecha_valor
+z_cable = altura_poste - z_flecha
+y = np.zeros_like(x)
+
+x_flecha = [distancia / 2, distancia / 2]
+y_flecha = [0, 0]
+z_flecha_line = [altura_poste, altura_poste - flecha_valor]
+texto_z = altura_poste + 1.0
+
+fig3d = go.Figure()
+
+# Postes
+fig3d.add_trace(go.Scatter3d(x=[0, 0], y=[0, 0], z=[0, altura_poste],
+                             mode='lines', line=dict(color='saddlebrown', width=16)))
+fig3d.add_trace(go.Scatter3d(x=[distancia, distancia], y=[0, 0], z=[0, altura_poste],
+                             mode='lines', line=dict(color='saddlebrown', width=16)))
+
+# Etiquetas de los postes
+fig3d.add_trace(go.Scatter3d(x=[0], y=[0], z=[altura_poste + 0.4],
+                             mode='text', text=["Poste A"], textfont=dict(size=14), showlegend=False))
+fig3d.add_trace(go.Scatter3d(x=[distancia], y=[0], z=[altura_poste + 0.4],
+                             mode='text', text=["Poste B"], textfont=dict(size=14), showlegend=False))
+
+# Cable
+fig3d.add_trace(go.Scatter3d(x=x, y=y, z=z_cable,
+                             mode='lines', line=dict(color='gray', width=6)))
+
+# Flecha roja
+fig3d.add_trace(go.Scatter3d(x=x_flecha, y=y_flecha, z=z_flecha_line,
+                             mode='lines+markers', line=dict(color='red', width=5, dash="dot"),
+                             marker=dict(size=4, color='red')))
+
+# Texto flecha
+fig3d.add_trace(go.Scatter3d(
+    x=[distancia / 2], y=[0], z=[texto_z],
+    mode='text',
+    text=[f"<b>Flecha = {flecha_valor:.2f} m</b>"],
+    textfont=dict(size=16, color='red'),
+    showlegend=False
+))
+
+# Leyenda lateral
+fig3d.add_annotation(
+    dict(
+        showarrow=False,
+        text=f"<b>📏 Vano: {distancia:.1f} m<br>⬇️ Flecha: {flecha_valor:.2f} m<br>📐 Altura Poste: {altura_poste:.1f} m</b>",
+        xref="paper", yref="paper",
+        x=1.02, y=1.0,
+        align="left",
+        font=dict(size=13),
+        bordercolor="black",
+        borderwidth=1,
+        bgcolor="white",
+        opacity=0.9
+    )
+)
+
+fig3d.update_layout(
+    title=f"Vista 3D del Cable entre Postes - {area}",
+    showlegend=False,
+    scene=dict(
+        xaxis=dict(visible=False),
+        yaxis=dict(visible=False),
+        zaxis=dict(visible=False),
+        bgcolor='white'
+    ),
+    margin=dict(l=0, r=0, b=0, t=40),
+    paper_bgcolor='white',
+    plot_bgcolor='white',
+    height=600
+)
+
+st.plotly_chart(fig3d, use_container_width=True)
+
+
+pv = 0.613 * (vel ** 2)
+pc = pv * diametro_m
+pa = np.sqrt(peso_N_m ** 2 + pc ** 2)
+tension_admisible = carga_rotura_N / coef_seguridad
+
+x = np.linspace(0, vano_m, 100)
+y = - (4 * flecha / vano_m ** 2) * x * (vano_m - x)
+torre_altura = abs(flecha) * 1.8
+y += torre_altura
+x_centro = vano_m / 2
+y_centro = min(y)
+
+fig = go.Figure()
+fig.add_trace(go.Scatter(x=x, y=y, mode='lines', line=dict(color='black', width=3), name='Cable'))
+fig.add_trace(go.Scatter(x=[0, 0], y=[0, torre_altura], mode='lines', line=dict(color='black', width=4)))
+fig.add_trace(go.Scatter(x=[vano_m, vano_m], y=[0, torre_altura], mode='lines', line=dict(color='black', width=4)))
+fig.add_trace(go.Scatter(x=[0, vano_m], y=[torre_altura, torre_altura], mode='lines', line=dict(color='gray', dash='dash')))
+fig.add_trace(go.Scatter(x=[x_centro, x_centro], y=[y_centro, torre_altura], mode='lines', line=dict(color='red', width=2)))
+fig.add_annotation(x=x_centro + 1, y=(y_centro + torre_altura)/2, text=f"f ≈ {flecha:.3f} m", font=dict(color='red', size=14))
+fig.add_annotation(x= vano_m / 2 - 3, y=torre_altura + 0.8, text=f"🌬️ Viento: {vel:.2f} m/s", font=dict(color='blue', size=12))
+fig.update_layout(title=f"Esquema de Tendido y Flecha - {area}", height=500, showlegend=False)
+fig.update_xaxes(visible=False)
+fig.update_yaxes(visible=False)
+st.plotly_chart(fig, use_container_width=True)
+
 
 
 
